@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gclb-hc-dep
+  namespace: asm
+spec:
+  selector:
+    matchLabels:
+      app: gclb-hc
+  replicas: 1  
+  template:
+    metadata:
+      labels:
+        app: gclb-hc
+    spec:
+      containers:
+      - name: gclb-hc-hello-go
+        image: asia.gcr.io/k8s-day/check_my_ip:v1
+        resources:
+          limits:
+            cpu: "500m"
+            memory: "200Mi"
+          requests:
+            cpu: "250m"
+            memory: "100Mi"
+        ports:
+        - containerPort: 8080

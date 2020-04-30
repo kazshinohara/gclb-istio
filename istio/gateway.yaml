@@ -1,0 +1,96 @@
+## Gateway for health check from gclb and for hello-go-asm
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: asm-gateway
+  namespace: asm
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+---
+## Gateway for hello-go-asm2
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: asm2-gateway
+  namespace: asm2
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "hello-go-asm2.gcpx.org"
+---
+## Virtualservice for health check from GCLB
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: gclb-hc-vs
+  namespace: asm
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - asm-gateway
+  http:
+  - match:
+    - uri:
+        exact: /
+    route:
+    - destination:
+        host: gclb-hc-svc
+        port:
+          number: 80
+---
+## Virtualservice for hello-go-asm
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: hello-go-asm-vs
+  namespace: asm
+spec:
+  hosts:
+  - "hello-go-asm.gcpx.org"
+  gateways:
+  - asm-gateway
+  http:
+  - match:
+    - uri:
+        exact: /
+    route:
+    - destination:
+        host: hello-go-asm
+        port:
+          number: 80
+---
+## Virtualservice for hello-go-asm2
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: hello-go-asm2-vs
+  namespace: asm2
+spec:
+  hosts:
+  - "hello-go-asm2.gcpx.org"
+  gateways:
+  - asm2-gateway
+  http:
+  - match:
+    - uri:
+        exact: /
+    route:
+    - destination:
+        host: hello-go-asm2
+        port:
+          number: 80
