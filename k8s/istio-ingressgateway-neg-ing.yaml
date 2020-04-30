@@ -1,0 +1,9 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: istio-ingressgateway-neg-ing
+  namespace: istio-system
+spec:
+  backend:
+    serviceName: istio-ingressgateway-neg-svc
+    servicePort: 80
